@@ -29,8 +29,11 @@ class Asteroid:
         self.__velocity_x = velocity[0]
         self.__velocity_y = velocity[1]
 
-    def get_velocity(self):
-        return [self.__velocity_x,  self.__velocity_y]
+    def get_velocity_x(self):
+        return self.__velocity_x
+
+    def get_velocity_y(self):
+        return self.__velocity_y
 
     def get_size(self):
         return self.__size

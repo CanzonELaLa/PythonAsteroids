@@ -6,8 +6,10 @@ from asteroid import Asteroid
 
 DEFAULT_ASTEROIDS_NUM = 5
 
-
 class GameRunner:
+
+    CLOCKWISE_ROTATION = 7
+    ANTICLOCKWISE_ROTATION = -7
 
     def __init__(self, asteroids_amnt):
         self._screen = Screen()
@@ -19,6 +21,8 @@ class GameRunner:
         location = [randint(self.screen_min_x, self.screen_max_x),
                     randint(self.screen_min_y, self.screen_max_y)]
         self.__ship = Ship(location, [0, 0], 0)
+        self.__max_delta_x = Screen.SCREEN_MAX_X - Screen.SCREEN_MIN_X
+        self.__max_delta_y = Screen.SCREEN_MAX_Y - Screen.SCREEN_MIN_Y
 
         # TODO:: Make sure randomized positions of asteroids are not the
         # TODO:: same as the ship
@@ -42,16 +46,34 @@ class GameRunner:
         self._screen.ontimer(self._do_loop, 5)
 
     def _game_loop(self):
-        '''
+        """
         Your code goes here!
-        '''
-        Screen.draw_ship(self.__ship.get_position_x(),
-                         self.__ship.get_position_y(),
-                         self.__ship.get_heading())
+        """
+
+        if self._screen.is_left_pressed():
+            self.__ship.rotate(self.ANTICLOCKWISE_ROTATION)
+        if self._screen.is_right_pressed():
+            self.__ship.rotate(self.CLOCKWISE_ROTATION)
+
+        self.move_object(self.__ship)
+
+        # TODO:: Figure out why it throws an exception here
+        Screen.draw_ship(self.__ship.position_x,
+                         self.__ship.position_y,
+                         self.__ship.heading)
 
         for asteroid in self.__asteroids:
+            self.move_object(asteroid)
             Screen.draw_asteroid(asteroid, asteroid.get_position_x(),
                                  asteroid.get_position_y())
+
+    def move_object(self, obj):
+        obj.set_position_x((obj.get_velocity_x() + obj.get_position_x() -
+                            self.screen_min_x) % self.__max_delta_x +
+                           self.screen_min_x)
+        obj.set_position_y((obj.get_velocity_y() + obj.get_position_y() -
+                            self.screen_min_y) % self.__max_delta_y +
+                           self.screen_min_y)
 
 
 def main(amnt):
