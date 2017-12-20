@@ -1,14 +1,19 @@
 from math import sin, cos, radians
 
 class Ship:
+    RADIUS = 1
 
     def __init__(self, location, velocity, heading):
-        self.position_x = location[0]
-        self.position_y = location[1]
+        self.__position_x = location[0]
+        self.__position_y = location[1]
         self.__velocity_x = velocity[0]
         self.__velocity_y = velocity[1]
         self.heading = heading
         self.__rad_heading = radians(heading)
+        self.__radius = self.RADIUS
+
+    def get_radius(self):
+        return self.__radius
 
     def accelerate(self):
         new_velocity_x = self.__velocity_x + cos(self.__rad_heading)
@@ -20,23 +25,23 @@ class Ship:
         self.__rad_heading = radians(self.heading)
 
     def set_location(self, location):
-        self.position_x = location[0]
-        self.position_y = location[1]
+        self.__position_x = location[0]
+        self.__position_y = location[1]
 
     def set_position_x(self, x):
-        self.position_x = x
+        self.__position_x = x
 
     def set_position_y(self, y):
-        self.position_y = y
+        self.__position_y = y
 
     def get_position_x(self):
-        return self.position_x
+        return self.__position_x
 
     def get_position_y(self):
-        return self.position_y
+        return self.__position_y
 
     def get_location(self):
-        return [self.position_x, self.position_y]
+        return [self.__position_x, self.__position_y]
 
     def set_velocity(self, velocity):
         self.__velocity_x = velocity[0]
