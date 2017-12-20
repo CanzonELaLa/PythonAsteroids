@@ -26,12 +26,12 @@ class GameRunner:
 
         # TODO:: Make sure randomized positions of asteroids are not the
         # TODO:: same as the ship
-        self.__asteroids = [Asteroid(
-            [randint(self.screen_min_x, self.screen_max_x),
-             randint(self.screen_min_y, self.screen_max_y)],
-            [randint(self.screen_min_x, self.screen_max_x),
-             randint(self.screen_min_y, self.screen_max_y)], 3)
-            for _ in range(asteroids_amnt)]
+        # self.__asteroids = [Asteroid(
+        #     [randint(self.screen_min_x, self.screen_max_x),
+        #      randint(self.screen_min_y, self.screen_max_y)],
+        #     [randint(self.screen_min_x, self.screen_max_x),
+        #      randint(self.screen_min_y, self.screen_max_y)], 3)
+        #     for _ in range(asteroids_amnt)]
 
     def run(self):
         self._do_loop()
@@ -51,21 +51,31 @@ class GameRunner:
         """
 
         if self._screen.is_left_pressed():
-            self.__ship.rotate(self.ANTICLOCKWISE_ROTATION)
-        if self._screen.is_right_pressed():
             self.__ship.rotate(self.CLOCKWISE_ROTATION)
+        if self._screen.is_right_pressed():
+            self.__ship.rotate(self.ANTICLOCKWISE_ROTATION)
+        if self._screen.is_up_pressed():
+            self.__ship.accelerate()
 
+        self.move_ship()
+
+        # self.move_asteroids()
+
+    def move_ship(self):
         self.move_object(self.__ship)
 
-        # TODO:: Figure out why it throws an exception here
-        Screen.draw_ship(self.__ship.position_x,
-                         self.__ship.position_y,
-                         self.__ship.heading)
+        pos_x = self.__ship.position_x
+        pos_y = self.__ship.position_y
+        heading = self.__ship.heading
 
-        for asteroid in self.__asteroids:
-            self.move_object(asteroid)
-            Screen.draw_asteroid(asteroid, asteroid.get_position_x(),
-                                 asteroid.get_position_y())
+        # TODO:: Figure out why it throws an exception here
+        self._screen.draw_ship(pos_x, pos_y, heading)
+
+    # def move_asteroids(self):
+    #     for asteroid in self.__asteroids:
+    #         self.move_object(asteroid)
+    #         Screen.draw_asteroid(asteroid, asteroid.get_position_x(),
+    #                              asteroid.get_position_y())
 
     def move_object(self, obj):
         obj.set_position_x((obj.get_velocity_x() + obj.get_position_x() -

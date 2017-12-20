@@ -16,8 +16,8 @@ class Ship:
         self.set_velocity([new_velocity_x, new_velocity_y])
 
     def rotate(self, increment):
-        self.__heading += increment
-        self.__rad_heading = radians(self.__heading)
+        self.heading += increment
+        self.__rad_heading = radians(self.heading)
 
     def set_location(self, location):
         self.position_x = location[0]
