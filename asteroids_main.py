@@ -6,7 +6,6 @@ from asteroid import Asteroid
 
 DEFAULT_ASTEROIDS_NUM = 5
 
-
 class GameRunner:
     CLOCKWISE_ROTATION = 7
     ANTICLOCKWISE_ROTATION = -7
@@ -82,7 +81,7 @@ class GameRunner:
 
         self._screen.draw_ship(self.__ship.get_position_x(),
                                self.__ship.get_position_y(),
-                               self.__ship.heading)
+                               self.__ship.get_heading())
 
     # def move_asteroids(self):
     #     for asteroid in self.__asteroids:
