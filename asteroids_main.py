@@ -6,12 +6,10 @@ from asteroid import Asteroid
 from torpedo import Torpedo
 from math import cos, sin
 
-
 DEFAULT_ASTEROIDS_NUM = 5
 
 
 class GameRunner:
-
     CLOCKWISE_ROTATION = 7
     ANTICLOCKWISE_ROTATION = -7
     INITIAL_ASTEROID_SIZE = 3
@@ -26,7 +24,6 @@ class GameRunner:
     LOSE_MESSAGE = 'You lose!\n (I told you though...)'
     QUIT_TITLE = 'Out of witty comebacks exception thrown'
     QUIT_MESSAGE = "You quit!\n Can't say I blame you"
-
 
     def __init__(self, asteroids_amnt):
         self._screen = Screen()
@@ -61,22 +58,22 @@ class GameRunner:
         """
         Your code goes here!
         """
-        quit = False
+        game_over_flag = False
         message = ""
         title = ""
         if len(self.__asteroids) == 0:
             title = self.WIN_TITLE
             message = self.WIN_MESSAGE
-            quit = True
+            game_over_flag = True
         elif self.__ship.get_lives() == 0:
             title = self.LOSE_TITLE
             message = self.LOSE_MESSAGE
-            quit = True
+            game_over_flag = True
         elif self._screen.should_end():
             title = self.QUIT_TITLE
             message = self.QUIT_MESSAGE
-            quit = True
-        if quit:
+            game_over_flag = True
+        if game_over_flag:
             self.__game_over(message, title)
 
         if self._screen.is_left_pressed():
