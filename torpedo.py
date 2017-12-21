@@ -13,6 +13,7 @@ class Torpedo:
         self.__heading = heading
         self.__rad_heading = radians(heading)
         self.__radius = self.RADIUS
+        self.__life_time = 0
 
     def get_radius(self):
         return self.__radius
@@ -51,10 +52,9 @@ class Torpedo:
 
     def get_heading(self):
         return self.__heading
-    #
-    # def move(self):
-    #     new_vel_x = self.__velocity_x + self.ACCELERATION_COEFFICIANT * cos(
-    #         self.__rad_heading)
-    #     new_vel_y = self.__velocity_y + self.ACCELERATION_COEFFICIANT * sin(
-    #         self.__rad_heading)
-    #     self.set_velocity([new_vel_x, new_vel_y])
+
+    def add_life_time(self):
+        self.__life_time += 1
+
+    def get_life_time(self):
+        return self.__life_time

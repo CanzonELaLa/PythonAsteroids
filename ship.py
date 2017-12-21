@@ -11,6 +11,13 @@ class Ship:
         self.__heading = heading
         self.__rad_heading = radians(heading)
         self.__radius = self.RADIUS
+        self.__lives = 3
+
+    def get_lives(self):
+        return self.__lives
+
+    def subtract_life(self):
+        self.__lives -= 1
 
     def get_radius(self):
         return self.__radius

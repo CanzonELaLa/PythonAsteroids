@@ -11,6 +11,7 @@ DEFAULT_ASTEROIDS_NUM = 5
 
 
 class GameRunner:
+
     CLOCKWISE_ROTATION = 7
     ANTICLOCKWISE_ROTATION = -7
     INITIAL_ASTEROID_SIZE = 3
@@ -18,6 +19,14 @@ class GameRunner:
     ACCELERATION_COEFFICIANT = 2
     COLLISION_MESSAGE = 'You have collided with an asteroid!'
     COLLISION_TITLE = 'Collision!'
+    MAX_TORPEDO_LIFE_TIME = 200
+    WIN_TITLE = 'Conglaturations'
+    WIN_MESSAGE = 'You win!\n The force is strong with this one.'
+    LOSE_TITLE = 'all your bases are belong to us'
+    LOSE_MESSAGE = 'You lose!\n (I told you though...)'
+    QUIT_TITLE = 'Out of witty comebacks exception thrown'
+    QUIT_MESSAGE = "You quit!\n Can't say I blame you"
+
 
     def __init__(self, asteroids_amnt):
         self._screen = Screen()
@@ -52,6 +61,23 @@ class GameRunner:
         """
         Your code goes here!
         """
+        quit = False
+        message = ""
+        title = ""
+        if len(self.__asteroids) == 0:
+            title = self.WIN_TITLE
+            message = self.WIN_MESSAGE
+            quit = True
+        elif self.__ship.get_lives() == 0:
+            title = self.LOSE_TITLE
+            message = self.LOSE_MESSAGE
+            quit = True
+        elif self._screen.should_end():
+            title = self.QUIT_TITLE
+            message = self.QUIT_MESSAGE
+            quit = True
+        if quit:
+            self.__game_over(message, title)
 
         if self._screen.is_left_pressed():
             self.__ship.rotate(self.CLOCKWISE_ROTATION)
@@ -64,17 +90,37 @@ class GameRunner:
 
         self.update_locations()
 
+        self.__remove_old_torpedoes()
+
         if self.__check_collisions_with_ship():
             self._screen.show_message(self.COLLISION_TITLE,
                                       self.COLLISION_MESSAGE)
+            self.__ship.subtract_life()
             self._screen.remove_life()
 
         self.__torpedo_hit()
+
+    def __game_over(self, message, title):
+        self._screen.show_message(title, message)
+
+        self._screen.end_game()
+        sys.exit()
 
     def update_locations(self):
         self.move_ship()
         self.move_asteroids()
         self.move_torpedoes()
+
+    def __remove_old_torpedoes(self):
+        torpedoes_to_remove = []
+
+        for torpedo in self.__torpedoes:
+            if torpedo.get_life_time() >= self.MAX_TORPEDO_LIFE_TIME:
+                torpedoes_to_remove.append(torpedo)
+
+        for torpedo in torpedoes_to_remove:
+            self.__torpedoes.remove(torpedo)
+            self._screen.unregister_torpedo(torpedo)
 
     def __shoot_torpedo(self):
         if len(self.__torpedoes) < 15:
@@ -105,30 +151,30 @@ class GameRunner:
 
     def __torpedo_hit(self):
         # Using while loop because changes to the lists happen
-        i = 0
-        torpedo_hit = False
-        while i < len(self.__torpedoes):
-            j = 0
-            while j < len(self.__asteroids):
-                print(i)
-                print(j)
-                if self.__asteroids[j].has_intersection(self.__torpedoes[i]):
-                    self.__blow_up_asteroid(self.__asteroids[j],
-                                            self.__torpedoes[i])
-                    self._screen.unregister_torpedo(self.__torpedoes[i])
-                    self.__torpedoes.remove(self.__torpedoes[i])
-                    torpedo_hit = True
-                else:
-                    j += 1
-            if not torpedo_hit:
-                i += 1
-                torpedo_hit = False
+        asteroids_to_remove = []
+        torpedoes_to_remove = []
+
+        for asteroid in self.__asteroids:
+            for torpedo in self.__torpedoes:
+                if asteroid.has_intersection(torpedo):
+                    self.__blow_up_asteroid(asteroid, torpedo)
+                    torpedoes_to_remove.append(torpedo)
+                    asteroids_to_remove.append(asteroid)
+                    break  # Current torpedo expended
+
+        for torpedo in torpedoes_to_remove:
+            self._screen.unregister_torpedo(torpedo)
+            self.__torpedoes.remove(torpedo)
+
+        for asteroid in asteroids_to_remove:
+            self._screen.unregister_asteroid(asteroid)
+            self.__asteroids.remove(asteroid)
 
     def __blow_up_asteroid(self, asteroid, torpedo):
-        self._screen.unregister_asteroid(asteroid)
-        self.__asteroids.remove(asteroid)
         size = asteroid.get_size()
         self.__score += self.__calc_asteroid_score(size)
+        self._screen.set_score(self.__score)
+
         if size > 1:
             asteroid_vel = asteroid.get_velocity()
             torpedo_vel = torpedo.get_velocity()
@@ -145,6 +191,7 @@ class GameRunner:
                 self._screen.register_asteroid(new_asteroid,
                                                new_asteroid.get_size())
 
+    # todo:: move to asteroid.py
     @staticmethod
     def __calc_asteroid_score(size):
         if size == 3:
@@ -159,8 +206,8 @@ class GameRunner:
         while i < amount:
             pos_x = randint(self.screen_min_x, self.screen_max_x)
             pos_y = randint(self.screen_min_y, self.screen_max_y)
-            vel_x = randint(1, 5)
-            vel_y = randint(1, 5)
+            vel_x = randint(1, 7)
+            vel_y = randint(1, 7)
 
             if self.__ship.get_location() != [pos_x, pos_y]:
                 asteroid = Asteroid([pos_x, pos_y], [vel_x, vel_y],
@@ -177,6 +224,7 @@ class GameRunner:
 
     def move_torpedoes(self):
         for torpedo in self.__torpedoes:
+            torpedo.add_life_time()
             self.move_object(torpedo)
             self._screen.draw_torpedo(torpedo, torpedo.get_position_x(),
                                       torpedo.get_position_y(),
