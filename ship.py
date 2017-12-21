@@ -8,12 +8,15 @@ class Ship:
         self.__position_y = location[1]
         self.__velocity_x = velocity[0]
         self.__velocity_y = velocity[1]
-        self.heading = heading
+        self.__heading = heading
         self.__rad_heading = radians(heading)
         self.__radius = self.RADIUS
 
     def get_radius(self):
         return self.__radius
+
+    def get_rad_heading(self):
+        return self.__rad_heading
 
     def accelerate(self):
         new_velocity_x = self.__velocity_x + cos(self.__rad_heading)
@@ -21,8 +24,8 @@ class Ship:
         self.set_velocity([new_velocity_x, new_velocity_y])
 
     def rotate(self, increment):
-        self.heading += increment
-        self.__rad_heading = radians(self.heading)
+        self.__heading += increment
+        self.__rad_heading = radians(self.__heading)
 
     def set_location(self, location):
         self.__position_x = location[0]
@@ -54,11 +57,8 @@ class Ship:
         return self.__velocity_y
 
     def set_heading(self, heading):
-        self.heading = heading
-        self.__rad_heading = radians(self.heading)
+        self.__heading = heading
+        self.__rad_heading = radians(self.__heading)
 
     def get_heading(self):
-        return self.heading
-
-    def move(self):
-        pass
+        return self.__heading

@@ -1,18 +1,21 @@
-class Asteroid:
+from math import sin, cos, radians
 
-    RADIUS_MULT = 10
-    RADIUS_MINUS = -5
 
-    def __init__(self, location, velocity, size):
+class Torpedo:
+    RADIUS = 4
+    ACCELERATION_COEFFICIANT = 2
+
+    def __init__(self, location, velocity, heading):
         self.__position_x = location[0]
         self.__position_y = location[1]
         self.__velocity_x = velocity[0]
         self.__velocity_y = velocity[1]
-        self.__size = size
-        self.__radius = self.get_radius()
+        self.__heading = heading
+        self.__rad_heading = radians(heading)
+        self.__radius = self.RADIUS
 
     def get_radius(self):
-        return self.__size * self.RADIUS_MULT + self.RADIUS_MINUS
+        return self.__radius
 
     def set_location(self, location):
         self.__position_x = location[0]
@@ -46,14 +49,12 @@ class Asteroid:
     def get_velocity(self):
         return [self.__velocity_x, self.__velocity_y]
 
-    def get_size(self):
-        return self.__size
-
-    def has_intersection(self, obj):
-        if self.distance(obj) <= self.get_radius() + obj.get_radius():
-            return True
-        return False
-
-    def distance(self, obj):
-        return ((self.__position_x - obj.get_position_x()) ** 2 +
-                (self.__position_y - obj.get_position_y()) ** 2) ** 0.5
+    def get_heading(self):
+        return self.__heading
+    #
+    # def move(self):
+    #     new_vel_x = self.__velocity_x + self.ACCELERATION_COEFFICIANT * cos(
+    #         self.__rad_heading)
+    #     new_vel_y = self.__velocity_y + self.ACCELERATION_COEFFICIANT * sin(
+    #         self.__rad_heading)
+    #     self.set_velocity([new_vel_x, new_vel_y])
