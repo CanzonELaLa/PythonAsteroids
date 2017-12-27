@@ -1,60 +1,58 @@
-from math import sin, cos, radians
+###############################################################
+# Imports
+###############################################################
+
+from math import radians
+
+###############################################################
+# Class definition
+###############################################################
 
 
 class Torpedo:
+
     RADIUS = 4
-    ACCELERATION_COEFFICIANT = 2
 
     def __init__(self, location, velocity, heading):
-        self.__position_x = location[0]
-        self.__position_y = location[1]
-        self.__velocity_x = velocity[0]
-        self.__velocity_y = velocity[1]
+        """ Initiates the class """
+        self.__location = location
+        self.__velocity = velocity
         self.__heading = heading
-        self.__rad_heading = radians(heading)
-        self.__radius = self.RADIUS
-        self.__life_time = 0
+        self.__life_cycle = 0
 
     def get_radius(self):
-        return self.__radius
-
-    def set_location(self, location):
-        self.__position_x = location[0]
-        self.__position_y = location[1]
-
-    def set_position_x(self, x):
-        self.__position_x = x
-
-    def set_position_y(self, y):
-        self.__position_y = y
-
-    def get_position_x(self):
-        return self.__position_x
-
-    def get_position_y(self):
-        return self.__position_y
+        """
+        gets torpedo radius
+        """
+        return self.RADIUS
 
     def get_location(self):
-        return [self.__position_x, self.__position_y]
+        """
+        gets torpedo location
+        """
+        return self.__location
 
-    def set_velocity(self, velocity):
-        self.__velocity_x = velocity[0]
-        self.__velocity_y = velocity[1]
-
-    def get_velocity_x(self):
-        return self.__velocity_x
-
-    def get_velocity_y(self):
-        return self.__velocity_y
+    def set_location(self, location):
+        """
+        :param location: location to place torpedo in
+        sets torpedo location
+        """
+        self.__location = location
 
     def get_velocity(self):
-        return [self.__velocity_x, self.__velocity_y]
+        """
+        gets torpedo velocity
+        """
+        return self.__velocity
 
     def get_heading(self):
+        """
+        gets torpedo heading
+        """
         return self.__heading
 
-    def add_life_time(self):
-        self.__life_time += 1
+    def add_life_cycle(self):
+        self.__life_cycle += 1
 
-    def get_life_time(self):
-        return self.__life_time
+    def get_life_cycle(self):
+        return self.__life_cycle

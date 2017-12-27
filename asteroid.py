@@ -1,59 +1,78 @@
+###############################################################
+# Class definition
+###############################################################
+
+
 class Asteroid:
 
-    RADIUS_MULT = 10
+    RADIUS_MULTIPLIER = 10
     RADIUS_MINUS = -5
 
+    BIG_ASTEROID_SIZE = 3
+    BIG_ASTEROID_SCORE = 20
+
+    MEDIUM_ASTEROID_SIZE = 2
+    MEDIUM_ASTEROID_SCORE = 50
+
+    SMALL_ASTEROID_SIZE = 1
+    SMALL_ASTEROID_SCORE = 100
+
     def __init__(self, location, velocity, size):
-        self.__position_x = location[0]
-        self.__position_y = location[1]
-        self.__velocity_x = velocity[0]
-        self.__velocity_y = velocity[1]
+        """ Initiates the class """
+        self.__location = location  # Vector type
+        self.__velocity = velocity  # Vector type
         self.__size = size
-        self.__radius = self.get_radius()
 
     def get_radius(self):
-        return self.__size * self.RADIUS_MULT + self.RADIUS_MINUS
-
-    def set_location(self, location):
-        self.__position_x = location[0]
-        self.__position_y = location[1]
-
-    def set_position_x(self, x):
-        self.__position_x = x
-
-    def set_position_y(self, y):
-        self.__position_y = y
-
-    def get_position_x(self):
-        return self.__position_x
-
-    def get_position_y(self):
-        return self.__position_y
+        """
+        calculates asteroid radius.
+        """
+        return self.__size * self.RADIUS_MULTIPLIER + self.RADIUS_MINUS
 
     def get_location(self):
-        return [self.__position_x, self.__position_y]
+        """
+        gets asteroid location.
+        """
+        return self.__location
 
-    def set_velocity(self, velocity):
-        self.__velocity_x = velocity[0]
-        self.__velocity_y = velocity[1]
-
-    def get_velocity_x(self):
-        return self.__velocity_x
-
-    def get_velocity_y(self):
-        return self.__velocity_y
+    def set_location(self, location):
+        """
+        :param location: Vector in which to place asteroid
+        sets asteroid location to location.
+        """
+        self.__location = location
 
     def get_velocity(self):
-        return [self.__velocity_x, self.__velocity_y]
+        """
+        gets asteroid velocity.
+        """
+        return self.__velocity
 
     def get_size(self):
+        """
+        gets asteroid size
+        """
         return self.__size
 
     def has_intersection(self, obj):
-        if self.distance(obj) <= self.get_radius() + obj.get_radius():
+        """
+        :param obj: object to check if asteroid intersects with
+        :return: True of asteroid and obj are intersecting and False otherwise.
+        Returns True if the distance between the locations of the objects
+         is less than or equal to their combined radii.
+        """
+        if self.__location.get_distance(obj.get_location())\
+                <= (self.get_radius() + obj.get_radius()):
             return True
         return False
 
-    def distance(self, obj):
-        return ((self.__position_x - obj.get_position_x()) ** 2 +
-                (self.__position_y - obj.get_position_y()) ** 2) ** 0.5
+    def get_score(self):
+        """
+        gets asteroid score worth by asteroid size
+        """
+        if self.__size == self.BIG_ASTEROID_SIZE:
+            return self.BIG_ASTEROID_SCORE
+        elif self.__size == self.MEDIUM_ASTEROID_SIZE:
+            return self.MEDIUM_ASTEROID_SCORE
+        elif self.__size == self.SMALL_ASTEROID_SIZE:
+            return self.SMALL_ASTEROID_SCORE

@@ -1,71 +1,90 @@
+###############################################################
+# Imports
+###############################################################
+
 from math import sin, cos, radians
+from vector import Vector
+
+###############################################################
+# Class definition
+###############################################################
+
 
 class Ship:
-    RADIUS = 1
 
-    def __init__(self, location, velocity, heading):
-        self.__position_x = location[0]
-        self.__position_y = location[1]
-        self.__velocity_x = velocity[0]
-        self.__velocity_y = velocity[1]
+    RADIUS = 1
+    INITIAL_HEADING = 0
+    INITIAL_SHIP_LIVES = 3
+
+    def __init__(self, location, velocity=Vector(0, 0),
+                 heading=INITIAL_HEADING):
+        """ Initiates the class """
+        self.__location = location  # Vector type
+        self.__velocity = velocity  # Vector type
         self.__heading = heading
-        self.__rad_heading = radians(heading)
-        self.__radius = self.RADIUS
-        self.__lives = 3
+        self.__lives = self.INITIAL_SHIP_LIVES
 
     def get_lives(self):
+        """
+        gets ship lives
+        """
         return self.__lives
 
     def subtract_life(self):
+        """
+        subtracts 1 life from ship
+        """
         self.__lives -= 1
 
     def get_radius(self):
-        return self.__radius
+        """
+        returns ship radius
+        """
+        return self.RADIUS
 
     def get_rad_heading(self):
-        return self.__rad_heading
+        """
+        returns ship heading in radians
+        """
+        return radians(self.__heading)
 
     def accelerate(self):
-        new_velocity_x = self.__velocity_x + cos(self.__rad_heading)
-        new_velocity_y = self.__velocity_y + sin(self.__rad_heading)
-        self.set_velocity([new_velocity_x, new_velocity_y])
+        """
+        accelerates ship velocity in its heading
+        """
+        rad_heading = self.get_rad_heading()
+        acceleration_vector = Vector(cos(rad_heading), sin(rad_heading))
+
+        self.__velocity += acceleration_vector
 
     def rotate(self, increment):
+        """
+        :param increment: increment in degrees to change ship heading
+        changes ship heading by provided increment.
+        """
         self.__heading += increment
-        self.__rad_heading = radians(self.__heading)
 
     def set_location(self, location):
-        self.__position_x = location[0]
-        self.__position_y = location[1]
-
-    def set_position_x(self, x):
-        self.__position_x = x
-
-    def set_position_y(self, y):
-        self.__position_y = y
-
-    def get_position_x(self):
-        return self.__position_x
-
-    def get_position_y(self):
-        return self.__position_y
+        """
+        :param location: location to place ship in
+        sets ship's location
+        """
+        self.__location = location
 
     def get_location(self):
-        return [self.__position_x, self.__position_y]
+        """
+        gets ship location
+        """
+        return self.__location
 
-    def set_velocity(self, velocity):
-        self.__velocity_x = velocity[0]
-        self.__velocity_y = velocity[1]
-
-    def get_velocity_x(self):
-        return self.__velocity_x
-
-    def get_velocity_y(self):
-        return self.__velocity_y
-
-    def set_heading(self, heading):
-        self.__heading = heading
-        self.__rad_heading = radians(self.__heading)
+    def get_velocity(self):
+        """
+        gets ship velocity
+        """
+        return self.__velocity
 
     def get_heading(self):
+        """
+        gets ship heading
+        """
         return self.__heading
