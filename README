@@ -1,0 +1,65 @@
+RonIt, 311604938, Ron Itzhak
+segalman, 311340350, Amit Segal
+We did not consult anyone in this exercise
+
+==========================================
+  Files:
+==========================================
+
+asteroid.py         -   Contains the Asteroid class
+asteroids_main.py   -   Runs the game. Imports all other files.
+ship.py             -   Contains the Ship class
+torpedo.py          -   Contains the Torpedo class
+vector.py           -   Contains the Vector class which we decided to make to
+                        simplify location and velocity calculations.
+
+==========================================
+  Decisions:
+==========================================
+
+Vector class:
+
+Many of the calculations needed on this exercise were vector calculations,
+therefore making a specific class for it seemed prudent. The alternative would
+have been to make use of lists and calculate the components of each vector
+separately, which seems unwise.
+
+
+Use of polymorphism:
+
+Since we did not learn/show inheritance in class (even though we know how to
+use it), we decided to implement methods of the same signature in Ship,
+Asteroid, and Torpedo to make use of polymorphism in asteroids_main.py
+(as seen in move_object(self, obj) method).
+The other alternative would have been to implement separate functions for
+movement for each class, which, again, seemed unwise.
+
+
+Initial asteroid data:
+
+Positions   -   In order to prevent a case in which an asteroid would be given
+                the same location as the initial location of the ship, we have
+                decided to methodically generate random values for both x and y
+                axes such that if the x values of the ship and the asteroid are
+                identical, we make sure the y value is not. If they are not
+                identical, then y will be chosen randomly as well.
+                The alternative would have been to generate x and y values
+                randomly (and simultaneously) and then compare them to the
+                ship's. If they were identical, we would have assigned new
+                values randomly. This of course could have led to an infinite
+                loop, albeit very unlikely.
+Velocities  -   In order to make sure an asteroid can be given both a positive
+                and a negative velocity within the game's range yet prevent a
+                velocity of 0 on any axis, we've multiplied the result of the
+                randint() within the given range with (-1) to the power of
+                randint(0,1) which could result in both 1 or -1, therefore
+                providing both options.
+                The alternative would be to use the choice() method of the
+                random module to randomly choose a number from a sequence
+                specifically made to include every possible velocity within the
+                range, excluding 0, which would have made for a less elegant
+                and efficient solution.
+
+
+
+

@@ -11,32 +11,31 @@ DEFAULT_ASTEROIDS_NUM = 5
 
 
 class GameRunner:
-
     # ship related constants
     SHIP_ROTATION_INCREMENT = 7
 
     # asteroids related constants
     NEW_ASTEROIDS_AMOUNT = 2  # amount of asteroids split from original
     MIN_ASTEROID_VELOCITY = 1
-    MAX_ASTEROID_VELOCITY = 7
+    MAX_ASTEROID_VELOCITY = 5
 
     # torpedo related constants
     TORPEDO_ACCELERATION_COEFFICIENT = 2
     MAX_TORPEDO_LIFE_CYCLES = 200
     MAX_ACTIVE_TORPEDOES = 15
 
-    # game messages
+    # game messages - We had fun with these, can you get them all?
     COLLISION_MESSAGE = 'You have collided with an asteroid!'
     COLLISION_TITLE = 'Collision!'
 
-    WIN_TITLE = 'Conglaturations'
-    WIN_MESSAGE = 'You win!\n The force is strong with this one.'
+    WIN_TITLE = "You're winner!!"
+    WIN_MESSAGE = 'You win!\nThe force is strong with this one.'
 
     LOSE_TITLE = 'all your bases are belong to us'
-    LOSE_MESSAGE = 'You lose!\n (I told you though...)'
+    LOSE_MESSAGE = 'You lose!\n(I told you though...)'
 
-    QUIT_TITLE = 'OutOfWittyComebacksException thrown'
-    QUIT_MESSAGE = "You quit!\n Can't say I blame you"
+    QUIT_TITLE = 'OutOfWittyComebacksException'
+    QUIT_MESSAGE = "You quit! Can't say I blame you"
 
     def __init__(self, asteroids_amnt):
         """
@@ -75,11 +74,6 @@ class GameRunner:
         ship_x = self.__ship.get_location().get_x()
         ship_y = self.__ship.get_location().get_y()
 
-        # creates list of possible velocities
-        velocity_range = list(range(-self.MAX_ASTEROID_VELOCITY,
-                                    -self.MIN_ASTEROID_VELOCITY)) \
-                         + list(range(self.MIN_ASTEROID_VELOCITY,
-                                      self.MAX_ASTEROID_VELOCITY))
 
         for i in range(amount):
 
@@ -99,7 +93,12 @@ class GameRunner:
 
             # generates random velocity for asteroid such that the speed
             # will not be 0 in each axis
-            velocity = Vector(choice(velocity_range), choice(velocity_range))
+            velocity = Vector((-1) ** randint(0, 1) * randint(
+                                  self.MIN_ASTEROID_VELOCITY,
+                                  self.MAX_ASTEROID_VELOCITY),
+                              (-1) ** randint(0, 1) * randint(
+                                  self.MIN_ASTEROID_VELOCITY,
+                                  self.MAX_ASTEROID_VELOCITY))
 
             # creates asteroid object, adds it game asteroid list member
             # and registers it on screen object
@@ -124,6 +123,44 @@ class GameRunner:
         runs game instance
         """
 
+        # Check win/lose conditions
+        game_over_flag, message, title = self.__check_game_over()
+        if game_over_flag:
+            self.__game_over(title, message)
+
+        # rotates ship according to pressed key (left/right)
+        if self._screen.is_left_pressed():
+            self.__ship.rotate(self.SHIP_ROTATION_INCREMENT)
+        if self._screen.is_right_pressed():
+            self.__ship.rotate(-self.SHIP_ROTATION_INCREMENT)
+
+        # accelerates ship if up is pressed
+        if self._screen.is_up_pressed():
+            self.__ship.accelerate()
+
+        # shoots torpedo if space is pressed
+        if self._screen.is_space_pressed():
+            self.__shoot_torpedo()
+
+        # update locations for ship, asteroids and torpedoes
+        self.__update_locations()
+
+        # remove torpedoes that timed out
+        self.__remove_old_torpedoes()
+
+        # if ship has collided with an asteroid show message and subtract life
+        if self.__check_collisions_with_ship():
+            self._screen.show_message(self.COLLISION_TITLE,
+                                      self.COLLISION_MESSAGE)
+            self.__ship.subtract_life()
+            self._screen.remove_life()
+
+        self.__torpedo_hit()
+
+    def __check_game_over(self):
+        """ Check win / lose conditions """
+        # if any of the above is True, shows proper message
+
         game_over_flag = False
         message = ""
         title = ""
@@ -146,38 +183,7 @@ class GameRunner:
             message = self.QUIT_MESSAGE
             game_over_flag = True
 
-        # if any of the above is True, shows proper message
-        if game_over_flag:
-            self.__game_over(message, title)
-
-        # rotates ship according to pressed key (left/right)
-        if self._screen.is_left_pressed():
-            self.__ship.rotate(self.SHIP_ROTATION_INCREMENT)
-        if self._screen.is_right_pressed():
-            self.__ship.rotate(-self.SHIP_ROTATION_INCREMENT)
-
-        # accelerates ship if up is pressed
-        if self._screen.is_up_pressed():
-            self.__ship.accelerate()
-
-        # shoots torpedo if space is pressed
-        if self._screen.is_space_pressed():
-            self.__shoot_torpedo()
-
-        # update locations for ship, asteroids and torpedoes
-        self.update_locations()
-
-        # remove torpedoes that timed out
-        self.__remove_old_torpedoes()
-
-        # if ship has collided with an asteroid show message and subtract life
-        if self.__check_collisions_with_ship():
-            self._screen.show_message(self.COLLISION_TITLE,
-                                      self.COLLISION_MESSAGE)
-            self.__ship.subtract_life()
-            self._screen.remove_life()
-
-        self.__torpedo_hit()
+        return game_over_flag, message, title
 
     def __game_over(self, title, message):
         """
@@ -197,67 +203,63 @@ class GameRunner:
         """
 
         if len(self.__torpedoes) < self.MAX_ACTIVE_TORPEDOES:
+            # calculates torpedo velocity based on ship velocity, heading and
+            # the game's torpedo acceleration coefficient
+            torpedo_velocity = (self.__ship.get_velocity() +
+                                self.TORPEDO_ACCELERATION_COEFFICIENT *
+                                Vector(cos(self.__ship.get_rad_heading()),
+                                       sin(self.__ship.get_rad_heading())))
+
             torpedo = Torpedo(self.__ship.get_location().get_copy(),
-                              self.__get_torpedo_velocity(),
+                              torpedo_velocity,
                               self.__ship.get_heading())
             self._screen.register_torpedo(torpedo)
             self.__torpedoes.append(torpedo)
 
-    def __get_torpedo_velocity(self):
-        """
-        calculates torpedo velocity based on ship velocity, heading and
-        the game's torpedo acceleration coefficient
-        """
-
-        return (self.__ship.get_velocity() +
-                self.TORPEDO_ACCELERATION_COEFFICIENT *
-                Vector(cos(self.__ship.get_rad_heading()),
-                       sin(self.__ship.get_rad_heading())))
-
-    def update_locations(self):
+    def __update_locations(self):
         """
         updates ship, asteroids and torpedoes location
         """
 
-        self.move_ship()
-        self.move_asteroids()
-        self.move_torpedoes()
+        self.__move_ship()
+        self.__move_asteroids()
+        self.__move_torpedoes()
 
-    def move_ship(self):
+    def __move_ship(self):
         """
         updates ship location and draws ship at new location on screen
         """
-        self.move_object(self.__ship)
+        self.__move_object(self.__ship)
 
         self._screen.draw_ship(self.__ship.get_location().get_x(),
                                self.__ship.get_location().get_y(),
                                self.__ship.get_heading())
 
-    def move_asteroids(self):
+    def __move_asteroids(self):
         """
         updates asteroids location and draws them on screen
         """
 
         for asteroid in self.__asteroids:
-            self.move_object(asteroid)
+            self.__move_object(asteroid)
             self._screen.draw_asteroid(asteroid,
                                        asteroid.get_location().get_x(),
                                        asteroid.get_location().get_y())
 
-    def move_torpedoes(self):
+    def __move_torpedoes(self):
         """
         updates torpedo life time, location and draws them on screen
         """
 
         for torpedo in self.__torpedoes:
             torpedo.add_life_cycle()
-            self.move_object(torpedo)
+            self.__move_object(torpedo)
             self._screen.draw_torpedo(torpedo,
                                       torpedo.get_location().get_x(),
                                       torpedo.get_location().get_y(),
                                       torpedo.get_heading())
 
-    def move_object(self, obj):
+    def __move_object(self, obj):
         """
         :param obj: object whose location is to be updated
         updates object location based on current velocity and location

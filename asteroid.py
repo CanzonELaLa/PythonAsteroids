@@ -6,7 +6,7 @@
 class Asteroid:
 
     RADIUS_MULTIPLIER = 10
-    RADIUS_MINUS = -5
+    RADIUS_NORMALIZATION_FACTOR = -5
 
     BIG_ASTEROID_SIZE = 3
     BIG_ASTEROID_SCORE = 20
@@ -27,7 +27,8 @@ class Asteroid:
         """
         calculates asteroid radius.
         """
-        return self.__size * self.RADIUS_MULTIPLIER + self.RADIUS_MINUS
+        return self.__size * self.RADIUS_MULTIPLIER + \
+               self.RADIUS_NORMALIZATION_FACTOR
 
     def get_location(self):
         """

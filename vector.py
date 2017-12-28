@@ -6,6 +6,7 @@
 class Vector:
 
     def __init__(self, x, y):
+        """ Initiates the class """
         self.__x = x
         self.__y = y
 
