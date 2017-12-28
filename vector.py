@@ -4,6 +4,9 @@
 
 
 class Vector:
+    """
+    Describes a 2D Vector in a vector space of dimension 2
+    """
 
     def __init__(self, x, y):
         """ Initiates the class """

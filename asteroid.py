@@ -4,6 +4,9 @@
 
 
 class Asteroid:
+    """
+    Describes an asteroid's location, velocity and size
+    """
 
     RADIUS_MULTIPLIER = 10
     RADIUS_NORMALIZATION_FACTOR = -5

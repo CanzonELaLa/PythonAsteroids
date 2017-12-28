@@ -11,6 +11,9 @@ from vector import Vector
 
 
 class Ship:
+    """
+    Describes a ship's location, velocity and heading
+    """
 
     RADIUS = 1
     INITIAL_HEADING = 0

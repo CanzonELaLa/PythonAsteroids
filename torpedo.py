@@ -10,6 +10,9 @@ from math import radians
 
 
 class Torpedo:
+    """
+    Describes a torpedo's location, velocity and heading
+    """
 
     RADIUS = 4
 
